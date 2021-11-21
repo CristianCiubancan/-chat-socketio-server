@@ -13,6 +13,8 @@ Features:
 * Send and receive messages
 * Live notifications
 * Recover lost passwords
+* Redis clustering
+* Loadbalancing
 
 This website features cookie authentication for security.
 
