@@ -1,0 +1,37 @@
+1. start an ec2 instance
+2. get redis folder
+3. build a docker image immage from it
+4. push that image
+5. build your project
+6. build docker image
+8. push docker image
+9. build docker-compose
+10. build nginx.conf
+11. scp/copy wait-for-it.sh, nginx.conf and docker-compose.yml to ec2
+12. install docker on ec2
+13. instal letsencrypt on ec2
+14. generate ssl cert
+15. run docker-compose up 
+
+useful commands:
+-docker build -t ciubancan/server . 
+
+-docker push ciubancan/server:latest
+
+-scp -i C:\Users\ciuba\.ssh\xxxxxxx.pem 
+docker-compose.yml nginx.conf wait-for-it.sh ubuntu@xxxxxxxxx:~
+
+-ssh -i c:\Users\ciuba\.ssh\xxxxxxx.pem 
+ubuntu@xxxxxxxxx
+
+-sudo su
+
+-docker-compose down
+
+-docker-compose stop
+
+-docker-compose rm -f
+
+-docker-compose pull
+
+-docker-compose up
