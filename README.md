@@ -40,7 +40,7 @@ Those are the frameworks/libraries used to build this server.
 <!-- GETTING STARTED -->
 ## Getting Started
 
-In order to try this locally you you may also want to download and run the [client side](https://github.com/CristianCiubancan/chat-client).
+In order to try this locally you you may also want to download and run the [client side](https://github.com/CristianCiubancan/chat-socketio-client).
 
 ### Prerequisites
 
