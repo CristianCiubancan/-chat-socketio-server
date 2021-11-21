@@ -34,6 +34,7 @@ Those are the frameworks/libraries used to build this server.
 * [Redis](https://redis.com/)
 * [TypeORM](https://typeorm.io/#/)
 * [Nodemailer](https://nodemailer.com/about/)
+* [Socket.io](https://socket.io/)
 
 
 
