@@ -9,6 +9,7 @@ Features:
 * Register
 * Login
 * Logout
+* Upload and change profile pics
 * Start chats
 * Send and receive messages
 * Live notifications
