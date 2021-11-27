@@ -96,7 +96,7 @@ const main = async () => {
         sameSite: "lax",
         secure: __prod__, //cookie only works in https
         domain: __prod__ ? ".happyoctopus.net" : undefined, //de scos secure false si de folosit ce e comentat
-        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //10 years
+        maxAge: 1000 * 60 * 60 * 24 * 10, //10 days
       },
     } as any);
 
@@ -205,29 +205,58 @@ const main = async () => {
 
     //ws paths
     io.on("connection", async (socket) => {
+      // await redisClient.flushall();
       const userId = (socket.request as Req).session.userId;
       if (userId) {
-        await redisClient.del(SOCKET_USER + userId);
-        await redisClient.set(SOCKET_USER + userId, socket.id);
+        console.log(`user: ${userId} connected wiht with socket ${socket.id}`);
+        await redisClient.lpush(SOCKET_USER + userId, socket.id);
       }
-      console.log(`user: ${userId} connected wiht with socket ${socket.id}`);
+
+      socket.on("read-message", async (message) => {
+        const receiverSocketIds = await redisClient.lrange(
+          SOCKET_USER + userId,
+          0,
+          -1
+        );
+
+        const myOtherSockets = receiverSocketIds.filter(
+          (socketId) => socketId !== socket.id
+        );
+        if (myOtherSockets.length > 0) {
+          emitter.to(myOtherSockets).emit("new-read-message", { message });
+        }
+      });
+
+      socket.on("message-for-me", async (message) => {
+        const mySockets = await redisClient.lrange(SOCKET_USER + userId, 0, -1);
+
+        const myOtherSockets = mySockets.filter(
+          (socketId) => socketId !== socket.id
+        );
+
+        if (myOtherSockets.length > 0) {
+          emitter
+            .to(myOtherSockets)
+            .emit("new-message-sent-by-me", { message });
+        }
+      });
 
       socket.on("message", async (message) => {
-        const receiverSocketId = await redisClient.get(
-          SOCKET_USER + message.to
+        const receiverSocketIds = await redisClient.lrange(
+          SOCKET_USER + message.to,
+          0,
+          -1
         );
 
-        console.log(
-          `${socket.id} sent a message to user with socket ${receiverSocketId}`
-        );
-
-        emitter.to(receiverSocketId!).emit("new-message", { message });
+        if (receiverSocketIds.length > 0) {
+          emitter.to(receiverSocketIds).emit("new-message", { message });
+        }
       });
 
       socket.on("disconnect", async () => {
         if (userId) {
           console.log(`${userId} disconnected`);
-          await redisClient.del(SOCKET_USER + userId);
+          await redisClient.lrem(SOCKET_USER + userId, 1, socket.id);
         }
       });
     });

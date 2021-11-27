@@ -45,6 +45,8 @@ const handleGetUserChats = async (req: Req, res: express.Response) => {
         xlm."chatId",
         'createdAt',
         xlm."createdAt",
+        'cursor',
+        xlm.cursor,
         'readers',
         xlm.readers
       ) as "lastMessage",
@@ -72,7 +74,8 @@ const handleGetUserChats = async (req: Req, res: express.Response) => {
           m."senderId",
           m.text,
           m."chatId",
-          m."createdAt",
+          date_part('epoch', m."createdAt") as "createdAt",
+          m."createdAt" as cursor,
           ARRAY(
             SELECT
               json_build_object('id', rn."userId")
@@ -111,7 +114,7 @@ const handleGetUserChats = async (req: Req, res: express.Response) => {
     where
       cm."memberId" = ${req.session.userId}
     ORDER BY
-      xlm."createdAt" DESC
+      xlm.cursor DESC
     limit
       $1;
     `,

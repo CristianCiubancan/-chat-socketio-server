@@ -8,7 +8,9 @@ interface Reader {
 }
 
 const handleGetNotifications = async (req: Req, res: express.Response) => {
-  if (!req.session.userId) return res.json(null);
+  if (!req.session.userId) {
+    return res.json({ error: "not authenticated" });
+  }
 
   const notifications = await getConnection().query(
     `select t1.id "messageId", t1."chatId", reader."userId", t1."senderId" from message as t1 join (select "chatId", max("createdAt") last_message from message where "chatId" in (select "chatId" from chat_members where "memberId"=${req.session.userId}) group by "chatId") as t2 on t2.last_message = t1."createdAt" join reader on reader."messageId" = t1.id;`
